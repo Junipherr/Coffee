@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Pending Order</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Lora:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <div class="container-fluid fixed-top px-0 wow fadeIn" data-wow-delay="0.1s">
+
+        <nav class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
+            <a href="index.html" class="navbar-brand ms-4 ms-lg-0">
+                <h1 class="fw-bold m-0">Jem's Coffee Shop</h1>
+            </a>
+            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    <a href="admin.html" class="nav-item nav-link">Home</a>
+                    <a href="editproduct.html" class="nav-item nav-link">Edit Product</a>
+
+                    <a href="pending.html" class="nav-item nav-link active">Orders</a>
+
+                </div>
+                <div class="d-none d-lg-flex ms-2">
+                    <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
+                        <small class="fa fa-search text-body"></small>
+                    </a>
+                    <a class="btn-sm-square bg-white rounded-circle ms-3" href="">
+                        <small class="fa fa-user text-body"></small>
+                    </a>
+                    <a class="btn-sm-square bg-white rounded-circle ms-3" href="start.html">
+                        <small class="fa fa-sign-out-alt text-body"></small>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container py-6">
+        <h1 class="display-5 mb-4">These are the orders to be processed</h1>
+        <h3 class="mt-4">Pending Orders:</h3>
+        <ul id="pending-orders" class="list-group"></ul>
+
+        <a href="admin.html" class="btn btn-primary mt-3">Return to Home</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            loadPendingOrders();
+        });
+
+        function loadPendingOrders() {
+            let pendingOrders = JSON.parse(localStorage.getItem('pendingOrders')) || [];
+            console.log("Pending Orders:", pendingOrders); // Debugging line
+            const pendingOrdersList = document.getElementById('pending-orders');
+            pendingOrdersList.innerHTML = '';
+
+            if (pendingOrders.length === 0) {
+                pendingOrdersList.innerHTML = '<li class="list-group-item">No pending orders.</li>';
+                return;
+            }
+
+            pendingOrders.forEach((item, index) => {
+                // Ensure quantity is a number
+                let quantity = Number(item.quantity) || 1;
+                let totalPrice = (Number(item.price) * quantity).toFixed(2);
+
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+                listItem.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong> <br>
+                        Quantity: ${quantity} <br>
+                        Price: $${totalPrice}
+                    </div>
+                    <div>
+                        <button class="btn btn-danger btn-sm" onclick="cancelOrder(${index})">Cancel</button>
+                    </div>
+                `;
+
+                pendingOrdersList.appendChild(listItem);
+            });
+        }
+
+        function cancelOrder(index) {
+            let pendingOrders = JSON.parse(localStorage.getItem('pendingOrders')) || [];
+            pendingOrders.splice(index, 1);
+            localStorage.setItem('pendingOrders', JSON.stringify(pendingOrders));
+            loadPendingOrders();
+        }
+
+        function markReceived(index) {
+            let pendingOrders = JSON.parse(localStorage.getItem('pendingOrders')) || [];
+            let receivedOrders = JSON.parse(localStorage.getItem('receivedOrders')) || [];
+
+            receivedOrders.push(pendingOrders[index]);
+            pendingOrders.splice(index, 1);
+
+            localStorage.setItem('pendingOrders', JSON.stringify(pendingOrders));
+            localStorage.setItem('receivedOrders', JSON.stringify(receivedOrders));
+
+            alert('Order received successfully!');
+            loadPendingOrders();
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5 pt-5">
+        <h2 class="text-center">Login</h2>
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault(); // Prevent form submission
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Check credentials
+            if (email === 'jem@gmail.com' && password === '11111111') {
+                window.location.href = 'index.html'; // Redirect to index.html
+            } else {
+                alert('Invalid credentials. Please try again.'); // Alert for invalid credentials
+            }
+        }
+    </script>
+</body>
+
+</html>
+</create_file>
