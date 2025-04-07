@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+       $(document).ready(function() {
+    $.ajax({
+        url: 'logout.php',
+        method: 'POST',
+        dataType: 'json',
+        success: function(response) {
+            // Clear only authentication-related storage
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('user');
+            sessionStorage.clear();
+            
+            // Preserve cart if exists in response
+            if (response.success && response.cart.length > 0) {
+                localStorage.setItem('cart', JSON.stringify(response.cart));
+            }
+            
+            setTimeout(function() {
+                window.location.href = "login.php";
+            }, 1000);
+        },
+        error: function() {
+            // Fallback if AJAX fails
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('user');
+            window.location.href = "login.php";
+        }
+    });
+});
+    </script>
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <h2>Logging out...</h2>
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</body>
+</html>
